@@ -1,0 +1,4 @@
+Vader is smart and funny.
+Vader is dumb and funny.
+Vader is dumb.
+Vader is smart.
