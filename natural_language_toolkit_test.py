@@ -27,19 +27,15 @@ def open_file(sentences):
         print("File not found")
         exit(1)
 
-if __name__ == '__main__':
-    nltk.download('vader_lexicon')
-    sentences = open_file("sentences.txt")
-    positive, negative, neutral, compound = [], [], [], []
-    for sentence in sentences:
-        comp, neg, neu, pos = analize(sentence)
-        positive.append(pos)
-        negative.append(neg)
-        neutral.append(neu)
-        compound.append(comp)
-    # save results in file
+def save_results(positive, negative, neutral, compound):
     with open('results.txt', 'w') as file:
         file.write("Positive: {0}\n".format(positive))
         file.write("Negative: {0}\n".format(negative))
         file.write("Neutral: {0}\n".format(neutral))
         file.write("Compound: {0}\n".format(compound))
+
+if __name__ == '__main__':
+    nltk.download('vader_lexicon')
+    sentences = open_file("sentences.txt")
+    compound, negative, neutral, positive = zip(*[analize(sentence) for sentence in sentences])
+    save_results(positive, negative, neutral, compound)
