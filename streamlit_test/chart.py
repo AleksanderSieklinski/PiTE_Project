@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
 
 dogef = pd.read_csv("dogecoin.csv")
 bitf = pd.read_csv("bitcoin.csv")
