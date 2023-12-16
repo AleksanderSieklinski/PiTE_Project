@@ -1,4 +1,10 @@
+import logging
+
 TWEETS_CSV_NAME = "tweets_"
 DATABASE_NAME = "tweets.db"
 DATABASE_PATH = f"databases/{DATABASE_NAME}"
 DATABASE_TABLE_NAME = "tweets"
+TWEETS_SEARCH_PAGES = 1
+TWEETS_SEARCH_WAIT_TIME = 2
+TWITTER_SESSION = "session"
+LOGGING_LEVEL = logging.DEBUG
