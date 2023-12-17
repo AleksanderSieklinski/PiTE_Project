@@ -1,4 +1,0 @@
-Do analizy sentymentu danych pobieranych z twittera użyjemy biblioteki nltk a z niej SentimentIntensityAnalyzer.
-Każdy tweet będzie przetworzony pod względem jego sumarycznego sentymentu odnośnie określonej przy dodawaniu pliku kryptowaluty.
-W wyniku program wygeneruje plik tekstowy zawierający ocenę każdego tweeta oraz średni sentyment spośród całej bazy przesłanych plików dotyczących jednej kryptowaluty.
-W następnych krokach plik tekstowy posłuży jako sprawdzenie poprawnego funckjonowania programu a wynikowy sentyment jako sprawdzenie związku zmian cen rynkowych i opinii publicznej.
