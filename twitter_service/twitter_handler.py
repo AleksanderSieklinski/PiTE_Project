@@ -1,19 +1,21 @@
 import datetime as date
 import threading
-
+import os
 from tweety import Twitter
 import pandas as pd
 import sqlite3
 import logging
-from constants.names import TWEETS_CSV_NAME, DATABASE_PATH, DATABASE_TABLE_NAME, TWEETS_SEARCH_PAGES, \
+from PiTE_Project.constants.names import TWEETS_CSV_NAME, DATABASE_PATH, DATABASE_TABLE_NAME, TWEETS_SEARCH_PAGES, \
     TWEETS_SEARCH_WAIT_TIME, TWITTER_SESSION, LOGGING_LEVEL
-from exceptions.database_exceptions import DatabaseConnectionError
+from PiTE_Project.exceptions.database_exceptions import DatabaseConnectionError
 
 
 class TweeterScraper:
     def __init__(self):
         self.setup_logging()
         self.lock = threading.Lock()
+        if not os.path.exists("databases"):
+            os.makedirs("databases")
         try:
             self.connection = sqlite3.connect(DATABASE_PATH)
             self.logger.info(f"Connected to database")
@@ -23,6 +25,8 @@ class TweeterScraper:
             raise DatabaseConnectionError(error_message)
 
     def setup_logging(self):
+        if not os.path.exists("logs"):
+            os.makedirs("logs")
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(LOGGING_LEVEL)
         formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
