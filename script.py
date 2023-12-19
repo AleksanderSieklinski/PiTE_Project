@@ -3,10 +3,12 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 
-end_date = datetime.today().strftime('%Y-%m-%d')
+
 
 # Change cryptocurrencies and start date to your preference
-crypto_data = yf.download("BTC-USD DOGE-USD ETH-USD", start="2020-01-01", end=end_date)
+start_date = "2020-01-01"
+end_date = datetime.today().strftime('%Y-%m-%d')
+crypto_data = yf.download("BTC-USD DOGE-USD ETH-USD", start=start_date, end=end_date)
 
 btc_data = crypto_data["Close"]["BTC-USD"].dropna()
 doge_data = crypto_data["Close"]["DOGE-USD"].dropna()
