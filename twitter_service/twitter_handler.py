@@ -5,9 +5,9 @@ from tweety import Twitter
 import pandas as pd
 import sqlite3
 import logging
-from PiTE_Project.constants.names import TWEETS_CSV_NAME, DATABASE_PATH, DATABASE_TABLE_NAME, TWEETS_SEARCH_PAGES, \
+from constants.names import TWEETS_CSV_NAME, DATABASE_PATH, DATABASE_TABLE_NAME, TWEETS_SEARCH_PAGES, \
     TWEETS_SEARCH_WAIT_TIME, TWITTER_SESSION, LOGGING_LEVEL
-from PiTE_Project.exceptions.database_exceptions import DatabaseConnectionError
+from exceptions.database_exceptions import DatabaseConnectionError
 
 
 class TweeterScraper:
