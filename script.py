@@ -1,12 +1,20 @@
 import yfinance as yf
 import pandas as pd
 import streamlit as st
+from datetime import datetime
 
-crypto_data = yf.download("BTC-USD DOGE-USD ETH-USD", period="max")
+end_date = datetime.today().strftime('%Y-%m-%d')
+
+# Change cryptocurrencies and start date to your preference
+crypto_data = yf.download("BTC-USD DOGE-USD ETH-USD", start="2020-01-01", end=end_date)
 
 btc_data = crypto_data["Close"]["BTC-USD"].dropna()
 doge_data = crypto_data["Close"]["DOGE-USD"].dropna()
 eth_data = crypto_data["Close"]["ETH-USD"].dropna()
+
+btc_data.to_csv("btc_data.csv")
+doge_data.to_csv("doge_data.csv")
+eth_data.to_csv("eth_data.csv")
 
 st.markdown("# Crypto Price Analysis")
 st.markdown("## Bitcoin Price")
