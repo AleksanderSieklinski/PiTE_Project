@@ -99,12 +99,13 @@ def show_on_webpage(crypto):
     st.markdown("#### Correlation")
     st.markdown("The correlation between the sentiment scores and the prices is " + str(pd.read_csv('out/' + crypto + '_merged.csv')['compound'].corr(pd.read_csv('out/' + crypto + '_merged.csv')['Close'])))
 
+def execute(crypto):
+    start_date, end_date, average_compound = process_csv_tweets(crypto)
+    process_csv_prices(crypto, start_date, end_date)
+    analyze_relation(crypto)
+    show_on_webpage(crypto)
 
 if __name__ == '__main__':
     nltk.download('vader_lexicon')
-    #start_date, end_date, average_compound = process_csv_tweets("BTC")
-    start_date = datetime.strptime("2017-07-13", "%Y-%m-%d").date()
-    end_date = datetime.strptime("2017-07-31", "%Y-%m-%d").date()
-    #process_csv_prices("BTC", start_date, end_date)
-    #analyze_relation("BTC")
-    show_on_webpage("BTC")
+    execute("ONE")
+    execute("XRP")
