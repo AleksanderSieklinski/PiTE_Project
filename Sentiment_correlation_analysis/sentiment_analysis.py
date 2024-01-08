@@ -16,6 +16,9 @@ def analize(sentence):
 def process_csv_tweets(crypto):
     df = pd.read_csv('in/' + crypto + '_tweets.csv')
 
+    # Filter out rows with invalid dates
+    df = df[pd.to_datetime(df['Date'], errors='coerce').notna()]
+
     # Extract the first and last date and remove the time
     first_date = datetime.strptime(df['Date'].iloc[0], "%Y-%m-%d %H:%M:%S%z").date()
     last_date = datetime.strptime(df['Date'].iloc[-1], "%Y-%m-%d %H:%M:%S%z").date()
@@ -26,7 +29,7 @@ def process_csv_tweets(crypto):
     print("First date: ", first_date)
     print("Last date: ", last_date)
 
-    sentences = df['Text']
+    sentences = df['Text'].astype(str)  # Convert to string
     likes = df['Likes']
     retweets = df['Retweets']
 
@@ -36,6 +39,10 @@ def process_csv_tweets(crypto):
     results_df['Date'] = pd.to_datetime(df['Date']).dt.date
     results_df['likes'] = likes
     results_df['retweets'] = retweets
+
+    # Group by date and calculate the mean of the compound sentiment scores
+    results_df = results_df.groupby('Date').mean().reset_index()
+
     results_df.to_csv('out/' + crypto + '_sentiment.csv')
 
     avg_compound = results_df['compound'].mean()
