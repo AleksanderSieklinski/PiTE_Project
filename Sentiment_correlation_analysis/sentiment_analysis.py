@@ -1,6 +1,7 @@
 import pandas as pd
 import nltk
 import yfinance as yf
+import streamlit as st
 from datetime import datetime
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
@@ -15,13 +16,20 @@ def analize(sentence):
 def process_csv_tweets(crypto):
     df = pd.read_csv('in/' + crypto + '_tweets.csv')
 
+    # Filter out rows with invalid dates
+    df = df[pd.to_datetime(df['Date'], errors='coerce').notna()]
+
     # Extract the first and last date and remove the time
     first_date = datetime.strptime(df['Date'].iloc[0], "%Y-%m-%d %H:%M:%S%z").date()
     last_date = datetime.strptime(df['Date'].iloc[-1], "%Y-%m-%d %H:%M:%S%z").date()
+    global start_date
+    global end_date
+    start_date = first_date
+    end_date = last_date
     print("First date: ", first_date)
     print("Last date: ", last_date)
 
-    sentences = df['Text']
+    sentences = df['Text'].astype(str)  # Convert to string
     likes = df['Likes']
     retweets = df['Retweets']
 
@@ -31,6 +39,10 @@ def process_csv_tweets(crypto):
     results_df['Date'] = pd.to_datetime(df['Date']).dt.date
     results_df['likes'] = likes
     results_df['retweets'] = retweets
+
+    # Group by date and calculate the mean of the compound sentiment scores
+    results_df = results_df.groupby('Date').mean().reset_index()
+
     results_df.to_csv('out/' + crypto + '_sentiment.csv')
 
     avg_compound = results_df['compound'].mean()
@@ -81,12 +93,26 @@ def analyze_relation(crypto):
     else:
         print("The standard deviation of the sentiment scores or the prices is zero. The correlation is undefined.")
 
+def show_on_webpage(crypto):
+    st.title("Cryptocurrency sentiment analysis")
+    st.markdown("### " + crypto)
+    st.markdown("#### Dates")
+    st.markdown("Start date: " + str(start_date))
+    st.markdown("End date: " + str(end_date))
+    st.markdown("#### Sentiment")
+    st.line_chart(pd.read_csv('out/' + crypto + '_sentiment.csv', index_col='Date', parse_dates=True)['compound'])
+    st.markdown("#### Prices")
+    st.line_chart(pd.read_csv('out/' + crypto + '_data.csv', index_col='Date', parse_dates=True)['Close'])
+    st.markdown("#### Correlation")
+    st.markdown("The correlation between the sentiment scores and the prices is " + str(pd.read_csv('out/' + crypto + '_merged.csv')['compound'].corr(pd.read_csv('out/' + crypto + '_merged.csv')['Close'])))
 
+def execute(crypto):
+    start_date, end_date, average_compound = process_csv_tweets(crypto)
+    process_csv_prices(crypto, start_date, end_date)
+    analyze_relation(crypto)
+    show_on_webpage(crypto)
 
 if __name__ == '__main__':
     nltk.download('vader_lexicon')
-    #start_date, end_date, average_compound = process_csv_tweets("BTC")
-    start_date = datetime.strptime("2017-07-13", "%Y-%m-%d").date()
-    end_date = datetime.strptime("2017-07-31", "%Y-%m-%d").date()
-    process_csv_prices("BTC", start_date, end_date)
-    analyze_relation("BTC")
+    execute("ONE")
+    execute("XRP")
