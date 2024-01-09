@@ -43,6 +43,9 @@ def process_csv_tweets(crypto):
     # Group by date and calculate the mean of the compound sentiment scores
     results_df = results_df.groupby('Date').mean().reset_index()
 
+    # Replace compound values based on their value
+    results_df['compound'] = results_df['compound'].apply(lambda x: 1 if x > 0.25 else (-1 if x < -0.1 else 0))
+
     results_df.to_csv('out/' + crypto + '_sentiment.csv')
 
     avg_compound = results_df['compound'].mean()
@@ -54,7 +57,7 @@ def process_csv_tweets(crypto):
     else:
         print("The overall sentiment of the tweets is neutral. {0}".format(avg_compound))
 
-    return first_date, last_date, avg_compound
+    return first_date, last_date
 
 def process_csv_prices(crypto, start_date, end_date):
     start_datetime = datetime.combine(start_date, datetime.min.time())
@@ -107,7 +110,7 @@ def show_on_webpage(crypto):
     st.markdown("The correlation between the sentiment scores and the prices is " + str(pd.read_csv('out/' + crypto + '_merged.csv')['compound'].corr(pd.read_csv('out/' + crypto + '_merged.csv')['Close'])))
 
 def execute(crypto):
-    start_date, end_date, average_compound = process_csv_tweets(crypto)
+    start_date, end_date = process_csv_tweets(crypto)
     process_csv_prices(crypto, start_date, end_date)
     analyze_relation(crypto)
     show_on_webpage(crypto)
