@@ -1,2 +1,2 @@
-yfinance
 streamlit
+cryptocmd
