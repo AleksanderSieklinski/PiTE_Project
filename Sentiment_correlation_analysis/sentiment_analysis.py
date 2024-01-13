@@ -64,7 +64,7 @@ def process_csv_prices(crypto, start_date, end_date):
     end_datetime = datetime.combine(end_date, datetime.min.time()) + pd.Timedelta(days=1)
 
     crypto_data = yf.download(crypto + "-USD", start=start_datetime, end=end_datetime)
-
+    print(123456789)
     if not crypto_data.empty:
         data = crypto_data["Close"].dropna()
         data.to_csv("out/" + crypto + "_data.csv")
@@ -73,7 +73,7 @@ def process_csv_prices(crypto, start_date, end_date):
 
 def analyze_relation(crypto):
     sentiment_data = pd.read_csv('out/' + crypto + '_sentiment.csv', index_col='Date', parse_dates=True)
-    price_data = pd.read_csv('out/' + crypto + '_data.csv', index_col='Date', parse_dates=True)
+    price_data = pd.read_csv('in/' + crypto + '_data.csv', index_col='Date', parse_dates=True)
 
     merged_data = pd.merge(sentiment_data, price_data, on='Date')
     merged_data.to_csv('out/' + crypto + '_merged.csv')
@@ -105,17 +105,17 @@ def show_on_webpage(crypto):
     st.markdown("#### Sentiment")
     st.line_chart(pd.read_csv('out/' + crypto + '_sentiment.csv', index_col='Date', parse_dates=True)['compound'])
     st.markdown("#### Prices")
-    st.line_chart(pd.read_csv('out/' + crypto + '_data.csv', index_col='Date', parse_dates=True)['Close'])
+    st.line_chart(pd.read_csv('in/' + crypto + '_data.csv', index_col='Date', parse_dates=True)['Close'])
     st.markdown("#### Correlation")
     st.markdown("The correlation between the sentiment scores and the prices is " + str(pd.read_csv('out/' + crypto + '_merged.csv')['compound'].corr(pd.read_csv('out/' + crypto + '_merged.csv')['Close'])))
 
 def execute(crypto):
     start_date, end_date = process_csv_tweets(crypto)
-    process_csv_prices(crypto, start_date, end_date)
+    #process_csv_prices(crypto, start_date, end_date)
     analyze_relation(crypto)
     show_on_webpage(crypto)
 
 if __name__ == '__main__':
     nltk.download('vader_lexicon')
-    execute("ONE")
-    execute("XRP")
+    execute("one")
+    execute("xrp")
