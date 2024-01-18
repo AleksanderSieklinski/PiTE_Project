@@ -1,121 +1,102 @@
 import pandas as pd
 import nltk
-import yfinance as yf
 import streamlit as st
 from datetime import datetime
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-
+import logging
+average_compound = 0.0
+gcorrelation = 0.0
 start_date = ""
 end_date = ""
-average_compound = 0.0
 
 def analize(sentence):
     result = SentimentIntensityAnalyzer().polarity_scores(sentence)
     return result['compound'], result['neg'], result['neu'], result['pos']
 
 def process_csv_tweets(crypto):
-    df = pd.read_csv('in/' + crypto + '_tweets.csv')
-
-    # Filter out rows with invalid dates
+    df = pd.read_csv('files/' + crypto + '_tweets.csv')
     df = df[pd.to_datetime(df['Date'], errors='coerce').notna()]
-
-    # Extract the first and last date and remove the time
     first_date = datetime.strptime(df['Date'].iloc[0], "%Y-%m-%d %H:%M:%S%z").date()
     last_date = datetime.strptime(df['Date'].iloc[-1], "%Y-%m-%d %H:%M:%S%z").date()
     global start_date
     global end_date
     start_date = first_date
     end_date = last_date
-    print("First date: ", first_date)
-    print("Last date: ", last_date)
-
-    sentences = df['Text'].astype(str)  # Convert to string
+    logging.info("Start date: {0}".format(start_date))
+    logging.info("End date: {0}".format(end_date))
+    sentences = df['Text'].astype(str)
     likes = df['Likes']
     retweets = df['Retweets']
-
     results = [analize(sentence) for sentence in sentences]
-
     results_df = pd.DataFrame(results, columns=['compound', 'negative', 'neutral', 'positive'])
     results_df['Date'] = pd.to_datetime(df['Date']).dt.date
     results_df['likes'] = likes
     results_df['retweets'] = retweets
-
-    # Group by date and calculate the mean of the compound sentiment scores
     results_df = results_df.groupby('Date').mean().reset_index()
-
-    # Replace compound values based on their value
     results_df['compound'] = results_df['compound'].apply(lambda x: 1 if x > 0.25 else (-1 if x < -0.1 else 0))
-
-    results_df.to_csv('out/' + crypto + '_sentiment.csv')
-
+    results_df.to_csv('files/' + crypto + '_sentiment.csv')
     avg_compound = results_df['compound'].mean()
-
     if avg_compound > 0.05:
-        print("The overall sentiment of the tweets is positive. {0}".format(avg_compound))
+        logging.info("The overall sentiment of the tweets is positive. {0}".format(avg_compound))
     elif avg_compound < -0.05:
-        print("The overall sentiment of the tweets is negative. {0}".format(avg_compound))
+        logging.info("The overall sentiment of the tweets is negative. {0}".format(avg_compound))
     else:
-        print("The overall sentiment of the tweets is neutral. {0}".format(avg_compound))
-
-    return first_date, last_date
-
-def process_csv_prices(crypto, start_date, end_date):
-    start_datetime = datetime.combine(start_date, datetime.min.time())
-    end_datetime = datetime.combine(end_date, datetime.min.time()) + pd.Timedelta(days=1)
-
-    crypto_data = yf.download(crypto + "-USD", start=start_datetime, end=end_datetime)
-    print(123456789)
-    if not crypto_data.empty:
-        data = crypto_data["Close"].dropna()
-        data.to_csv("out/" + crypto + "_data.csv")
-    else:
-        print("No data available for {0} on {1}".format(crypto, start_date))
+        logging.info("The overall sentiment of the tweets is neutral. {0}".format(avg_compound))
+    return start_date, end_date
 
 def analyze_relation(crypto):
-    sentiment_data = pd.read_csv('out/' + crypto + '_sentiment.csv', index_col='Date', parse_dates=True)
-    price_data = pd.read_csv('in/' + crypto + '_data.csv', index_col='Date', parse_dates=True)
-
+    sentiment_data = pd.read_csv('files/' + crypto + '_sentiment.csv', index_col='Date', parse_dates=True)
+    price_data = pd.read_csv('files/' + crypto + '_data.csv', index_col='Date', parse_dates=True)
     merged_data = pd.merge(sentiment_data, price_data, on='Date')
-    merged_data.to_csv('out/' + crypto + '_merged.csv')
-
+    merged_data.to_csv('files/' + crypto + '_merged.csv')
     if merged_data['compound'].std() != 0 and merged_data['Close'].std() != 0:
         correlation = merged_data['compound'].corr(merged_data['Close'])
-        print("The correlation between the sentiment scores and the prices is {0}".format(correlation))
+        logging.info("The correlation between the sentiment scores and the prices is {0}".format(correlation))
+        global gcorrelation
+        gcorrelation = correlation
         if(correlation > 0.5):
-            print("The correlation is strong.")
+            logging.info("The correlation is strong.")
         elif(correlation > 0.3):
-            print("The correlation is moderate.")
+            logging.info("The correlation is moderate.")
         elif(correlation > 0.1):
-            print("The correlation is weak.")
+            logging.info("The correlation is weak.")
         elif(correlation > -0.1):
-            print("The correlation is very weak.")
+            logging.info("The correlation is very weak.")
         elif(correlation > -0.3):
-            print("The correlation is weak.")
+            logging.info("The correlation is weak.")
         elif(correlation > -0.5):
-            print("The correlation is moderate.")
+            logging.info("The correlation is moderate.")
     else:
-        print("The standard deviation of the sentiment scores or the prices is zero. The correlation is undefined.")
+        logging.info("The correlation is not defined.")
 
 def show_on_webpage(crypto):
+    global gcorrelation
+    global start_date
+    global end_date
     st.title("Cryptocurrency sentiment analysis")
     st.markdown("### " + crypto)
     st.markdown("#### Dates")
     st.markdown("Start date: " + str(start_date))
     st.markdown("End date: " + str(end_date))
     st.markdown("#### Sentiment")
-    st.line_chart(pd.read_csv('out/' + crypto + '_sentiment.csv', index_col='Date', parse_dates=True)['compound'])
+    st.line_chart(pd.read_csv('files/' + crypto + '_sentiment.csv', index_col='Date', parse_dates=True)['compound'])
     st.markdown("#### Prices")
-    st.line_chart(pd.read_csv('in/' + crypto + '_data.csv', index_col='Date', parse_dates=True)['Close'])
+    st.line_chart(pd.read_csv('files/' + crypto + '_data.csv', index_col='Date', parse_dates=True)['Close'])
     st.markdown("#### Correlation")
-    st.markdown("The correlation between the sentiment scores and the prices is " + str(pd.read_csv('out/' + crypto + '_merged.csv')['compound'].corr(pd.read_csv('out/' + crypto + '_merged.csv')['Close'])))
+    st.markdown("The correlation between the sentiment scores and the prices is " + gcorrelation)
 
 def execute(crypto):
+    global start_date
+    global end_date
     start_date, end_date = process_csv_tweets(crypto)
-    #process_csv_prices(crypto, start_date, end_date)
     analyze_relation(crypto)
     show_on_webpage(crypto)
 
-if __name__ == '__main__':
+def main():
+    logging.basicConfig(level=logging.INFO)
     nltk.download('vader_lexicon')
     execute("one")
     execute("xrp")
+
+if __name__ == '__main__':
+    main()
