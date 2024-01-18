@@ -83,7 +83,8 @@ def show_on_webpage(crypto):
     st.markdown("#### Prices")
     st.line_chart(pd.read_csv('files/' + crypto + '_data.csv', index_col='Date', parse_dates=True)['Close'])
     st.markdown("#### Correlation")
-    st.markdown("The correlation between the sentiment scores and the prices is " + gcorrelation)
+    if gcorrelation:
+        st.markdown("The correlation between the sentiment scores and the prices is " + str(gcorrelation))
 
 def execute(crypto):
     global start_date
