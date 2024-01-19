@@ -1,0 +1,5 @@
+tweety-ns
+pandas
+nltk
+cryptocmd
+streamlit
