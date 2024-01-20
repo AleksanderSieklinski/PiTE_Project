@@ -28,12 +28,12 @@ def main():
     vet_data.to_csv("csvs/vet_data.csv")
 
     # 1Coin
-    onecoin_data = pd.read_csv("Download_and_show_data/test/one_data_test.csv", parse_dates=['Date'])
-    onecoin_data.set_index('Date', inplace=True)
-    onecoin_start_date = datetime.strptime("2021-01-01", "%Y-%m-%d")
-    onecoin_end_date = datetime.strptime("2022-01-01", "%Y-%m-%d")
-    onecoin_data = onecoin_data[(onecoin_data.index >= onecoin_start_date) & (onecoin_data.index <= onecoin_end_date)]
-    onecoin_data.to_csv("csvs/one_data.csv")
+    # onecoin_data = pd.read_csv("Download_and_show_data/test/one_data_test.csv", parse_dates=['Date'])
+    # onecoin_data.set_index('Date', inplace=True)
+    # onecoin_start_date = datetime.strptime("2021-01-01", "%Y-%m-%d")
+    # onecoin_end_date = datetime.strptime("2022-01-01", "%Y-%m-%d")
+    # onecoin_data = onecoin_data[(onecoin_data.index >= onecoin_start_date) & (onecoin_data.index <= onecoin_end_date)]
+    # onecoin_data.to_csv("csvs/one_data.csv")
 
     # XRP
     xrp_scraper = CmcScraper("XRP")
