@@ -4,10 +4,13 @@ from keras.models import load_model
 import os
 
 def predict_if_PumpDump(sciezka_do_pliku, data=None):
+    # best_model = load_model('../Machine_learning/ML_model_and_data/model_epoch_307.hdf5')
     best_model = load_model('Machine_learning/ML_model_and_data/model_epoch_307.hdf5')
-    recent_data = pd.read_csv(sciezka_do_pliku) 
+    recent_data = pd.read_csv(sciezka_do_pliku)
     if data is not None:
-        recent_data = recent_data[recent_data['Date'] < data].tail(20)   
+        recent_data['Date'] = pd.to_datetime(recent_data['Date'], format='%Y-%m-%d', errors='coerce')
+        data = pd.to_datetime(data)
+        recent_data = recent_data[recent_data['Date'] < data].tail(20)
     else:
         recent_data = recent_data.tail(20)
         
