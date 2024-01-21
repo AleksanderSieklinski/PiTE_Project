@@ -15,9 +15,9 @@ def load_crypto(crypto):
     sentiment_analysis.show_on_webpage(crypto)
     logger.info("Web page done")
     
-    logger.info("Predicting risk of pump&dump")
-    use_model_day.predict_if_PumpDump('csvs/{0}_merged.csv'.format(crypto))
-    logger.info("Prediction done")
+    # logger.info("Predicting risk of pump&dump")
+    # use_model_day.predict_if_PumpDump('csvs/{0}_merged.csv'.format(crypto))
+    # logger.info("Prediction done")
     
 if __name__ == "__main__":
     import logging
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
     load_crypto("one")
-    #load_crypto("bitconnect")
+    load_crypto("bitconnect")
     load_crypto("bnb")
     load_crypto("chaincoin")
     load_crypto("magi")
