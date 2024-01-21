@@ -27,3 +27,11 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
     load_crypto("one")
+    #load_crypto("bitconnect")
+    load_crypto("bnb")
+    load_crypto("chaincoin")
+    load_crypto("magi")
+    load_crypto("trx")
+    load_crypto("vet")
+    load_crypto("xrp")
+    load_crypto("xvg")
