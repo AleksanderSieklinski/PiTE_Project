@@ -41,8 +41,7 @@ xrp_data.set_index('Date', inplace=True)
 xrp_data.to_csv("final_data/xrp_data_final.csv")
 
 # ChainCoin
-chaincoin_data = pd.read_csv("chaincoin_data.csv", parse_dates=['Start']) 
-chaincoin_data = chaincoin_data.rename(columns={'Start': 'Date'})
+chaincoin_data = pd.read_csv("chaincoin_data.csv", parse_dates=['Date']) 
 chaincoin_data.set_index('Date', inplace=True)
 chaincoin_start_date = datetime.strptime("2017-01-02", "%Y-%m-%d")
 chaincoin_end_date = datetime.strptime("2017-11-06", "%Y-%m-%d")
@@ -51,7 +50,6 @@ chaincoin_data.to_csv("final_data/chaincoin_data_final.csv", index=False)
 
 # Magi
 magi_data = pd.read_csv("magi_data.csv", index_col=0, parse_dates=True)
-magi_data = magi_data.rename(columns={'Start': 'Date'})
 magi_start_date = datetime.strptime("2016-10-01", "%Y-%m-%d")
 magi_end_date = datetime.strptime("2018-07-30", "%Y-%m-%d")
 magi_data = magi_data[(magi_data.index >= magi_start_date) & (magi_data.index <= magi_end_date)]
@@ -59,7 +57,6 @@ magi_data.to_csv("final_data/magi_data_final.csv", index=False)
 
 # BitConnect
 bitconnect_data = pd.read_csv("bitconnect_data.csv", index_col=0, parse_dates=True)
-bitconnect_data = bitconnect_data.rename(columns={'Start': 'Date'})
 bitconnect_start_date = datetime.strptime("2017-01-12", "%Y-%m-%d")
 bitconnect_end_date = datetime.strptime("2020-01-16", "%Y-%m-%d")
 bitconnect_data = bitconnect_data[(bitconnect_data.index >= bitconnect_start_date) & (bitconnect_data.index <= bitconnect_end_date)]
