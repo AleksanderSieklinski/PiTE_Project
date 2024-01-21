@@ -1,3 +1,0 @@
-tweety-ns
-pandas
-streamlit

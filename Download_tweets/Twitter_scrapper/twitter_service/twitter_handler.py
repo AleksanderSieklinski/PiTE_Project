@@ -43,7 +43,7 @@ class TweeterScraper:
             tweets_to_add.append(tweet_data)
         tweets_to_save = pd.DataFrame(tweets_to_add)
         timestamp = date.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"csvs/{TWEETS_CSV_NAME}{keyword}_{timestamp}.csv"
+        filename = f"csvs/{keyword}_tweets.csv"
         with self.lock:
             self.logger.info(f"Saving data to {filename} file")
             tweets_to_save.to_csv(filename, index=False)
