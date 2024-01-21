@@ -14,7 +14,11 @@ def load_crypto(crypto):
     logger.info("Starting web page")
     sentiment_analysis.show_on_webpage(crypto)
     logger.info("Web page done")
-
+    
+    logger.info("Predicting risk of pump&dump")
+    use_model_day.predict_if_PumpDump('csvs/{0}_merged.csv'.format(crypto))
+    logger.info("Prediction done")
+    
 if __name__ == "__main__":
     import logging
     import os
@@ -22,6 +26,7 @@ if __name__ == "__main__":
     import Sentiment_correlation_analysis.sentiment_analysis as sentiment_analysis
     import Download_and_show_data.main as download_data
     import Download_tweets.Twitter_scrapper.twitter_service.twitter_handler as twitter_handler
+    import Machine_learning.ML_model_and_data.use_model_day as use_model_day
 
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
