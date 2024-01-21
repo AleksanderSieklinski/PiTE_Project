@@ -16,7 +16,7 @@ def predict_if_PumpDump(sciezka_do_pliku, data=None):
     recent_data = np.reshape(recent_data, (1, recent_data.shape[0], recent_data.shape[1]))
     X_recent = recent_data.copy()
     prediction = best_model.predict(X_recent)
-    print(prediction)
+    #print(prediction)
     
     ifPumpDump = 0
     if prediction[0][0] < 0.15:
