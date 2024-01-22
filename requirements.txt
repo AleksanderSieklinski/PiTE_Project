@@ -1,5 +1,8 @@
 tweety-ns
 pandas
+numpy
 nltk
 cryptocmd
 streamlit
+plotly
+tensorflow
