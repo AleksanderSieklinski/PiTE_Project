@@ -4,11 +4,9 @@ import time
 import os
 from tweety import Twitter
 import pandas as pd
-import sqlite3
 import logging
-from Download_tweets.Twitter_scrapper.constants.names import TWEETS_CSV_NAME, DATABASE_PATH, DATABASE_TABLE_NAME, TWEETS_SEARCH_PAGES, \
-    TWEETS_SEARCH_WAIT_TIME, TWITTER_SESSION, LOGGING_LEVEL, DATE_CHUNK_DAYS
-from Download_tweets.Twitter_scrapper.exceptions.database_exceptions import DatabaseConnectionError
+from Download_tweets.Twitter_scrapper.constants.names import TWEETS_SEARCH_PAGES, TWEETS_SEARCH_WAIT_TIME, \
+    TWITTER_SESSION, LOGGING_LEVEL, DATE_CHUNK_DAYS, LOGS_FULL_PATH, LOGS_DIRECTORY, CSVS_DIRECTORY
 
 
 class TweeterScraper:
@@ -18,20 +16,20 @@ class TweeterScraper:
         self.lock = threading.Lock()
 
     def setup_logging(self):
-        if not os.path.exists("logs"):
-            os.makedirs("logs")
+        if not os.path.exists(LOGS_DIRECTORY):
+            os.makedirs(LOGS_DIRECTORY)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(LOGGING_LEVEL)
         formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
         timestamp = date.date.today().strftime("%Y-%m-%d")
-        file_handler = logging.FileHandler(f"logs/twitter_service_{timestamp}.log")
+        file_handler = logging.FileHandler(f"{LOGS_FULL_PATH}{timestamp}.log")
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
 
     async def save_tweets_to_csv(self, all_tweets, keyword):
-        if not os.path.exists("csvs"):
-            os.makedirs("csvs")
+        if not os.path.exists(CSVS_DIRECTORY):
+            os.makedirs(CSVS_DIRECTORY)
         tweets_to_add = []
         for tweet in all_tweets:
             tweet_data = {
@@ -42,8 +40,7 @@ class TweeterScraper:
             }
             tweets_to_add.append(tweet_data)
         tweets_to_save = pd.DataFrame(tweets_to_add)
-        timestamp = date.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"csvs/{keyword}_tweets.csv"
+        filename = f"{CSVS_DIRECTORY}/{keyword}_tweets.csv"
         with self.lock:
             self.logger.info(f"Saving data to {filename} file")
             tweets_to_save.to_csv(filename, index=False)
