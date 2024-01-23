@@ -1,5 +1,5 @@
 def load_crypto(crypto):
-    logger.info("Starting twitter handler")
+    logger.info("Starting twitter handler for {0}".format(crypto))
     Scrapper = twitter_handler.TweeterScraper()
     if not os.path.exists("csvs/{0}_tweets.csv".format(crypto)):
         asyncio.run(Scrapper.search_keyword_tweets_and_save_to_csv(crypto))
@@ -14,10 +14,6 @@ def load_crypto(crypto):
     logger.info("Starting web page")
     sentiment_analysis.show_on_webpage(crypto)
     logger.info("Web page done")
-    
-    # logger.info("Predicting risk of pump&dump")
-    # use_model_day.predict_if_PumpDump('csvs/{0}_merged.csv'.format(crypto))
-    # logger.info("Prediction done")
     
 if __name__ == "__main__":
     import logging
